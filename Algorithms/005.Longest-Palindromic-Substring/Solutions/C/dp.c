@@ -67,7 +67,7 @@ char * longestPalindrome(char * s){
     char newString[lenOfString];
     get_sliced_string(s,newString, start , end);
 
-    printf("the longest string is %s\n",newString);
+    printf("the longest string is %s\n",newString); 
     return newString;
 }
 
