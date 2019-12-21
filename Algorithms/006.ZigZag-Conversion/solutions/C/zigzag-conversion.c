@@ -4,48 +4,46 @@
 
 
 char * convert(char * s, int numRows){
-    printf("The input string is: %s\n, number rows = %d\n",s, numRows);
 
     int i;
 
     int lenStr = strlen(s);
-    printf("len of string is %d\n", lenStr);
-    char newS[numRows-1][10];
     
-    for(i=0;i<numRows;i++) {
-        int j = 0;
-        for(; j < 10; j++) {
-           newS[i][j] = 0;
-        }
-    }
-    int numFullColumn = lenStr % numRows;
-    printf("numFullColumn = %d\n", numFullColumn);
-    for (i=0;i<numRows;i++) {
-        int j = 0;
-        for(;j < numFullColumn+1;j++) {
-            printf("i=%d, j= %d\n",i,j);
-            if ((j*(2*numRows-2) + i) > lenStr) {
-                break;
-            }
-            newS[i][j*(numRows-1)] = s[j*(2*numRows-2)+i];
-            if((j+1)*numRows + numRows - i - 2 >= lenStr){
-                break;
-            }
-            newS[i][j*(numRows-1)+(numRows-i-1)] = 
-                                s[(j+1)*numRows + numRows - i - 2];
-        }
-    }
-    for(i=0;i<numRows;i++) {
-        int j = 0;
-        for(; j < 10; j++) {
-            if(newS[i][j] != 0) {
-                printf("%c",newS[i][j]);
-            }
-        }
-    }
-    printf("\n");
 
-    return s;
+    if(numRows <= 1) {
+        return s;
+    }
+    int numFullColumn = lenStr / (numRows + numRows - 2);
+
+    //printf("originStr = %s, len=%d\n",s, lenStr);
+    char *newStr = malloc(sizeof(char)*(lenStr+1));
+    int newSeq = 0;
+    for (i=0;i < numRows;i++) {
+        int j=0;
+        for(;j<=numFullColumn;j++) {
+            if (j*(numRows+numRows - 2) + i < lenStr) {
+                newStr[newSeq] = s[j*(numRows+numRows - 2) + i];
+                newSeq ++;
+            }
+            
+            if (i == 0 || i == numRows - 1) {
+                continue;
+            } else {
+                if (((j+1) * (2*numRows - 2) - i) < lenStr) {
+                    newStr[newSeq] = s[(j+1) * (2*numRows - 2) - i];
+                    newSeq ++;
+                }
+            }
+        }
+        newStr[newSeq] = '\0';     
+        //printf("newStr = %s\n",newStr);
+
+    }
+    //printf("newSeq=%d\n",newSeq);
+    newStr[newSeq] = '\0';
+    //printf("newStr = %s\n",newStr);
+
+    return newStr;
 
 }
 
