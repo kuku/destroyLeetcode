@@ -4,47 +4,54 @@
 
 
 int cmp(const void *a, const void *b) {
+    
     return (*(int *)a-*(int *)b);
 }
 
 int** threeSum(int* nums, int numsSize, int* returnSize, int** returnColumnSizes){
-    int **array2 = NULL;
-
+     int preSize = 64;
+   // int ** array2 = (int **)realloc(array2, sizeof(int *)*(*returnSize + 1));
+    int **array2 = (int **)realloc(array2, sizeof(int *)*preSize);
+    int j=0;
+    int k=0;
+    *returnColumnSizes = NULL;
     *returnSize = 0;
+    
     qsort(nums, numsSize, sizeof(int),cmp);
     int i = 0;
+    int s = 0;
+    int *array1 = NULL;
     for (i=0;i<numsSize - 2;i++) {
-        int j = i + 1;
-        int k = numsSize - 1;
+        if (nums[i] > 0) {
+            continue;
+        }
+        if (i>0 && nums[i] == nums[i-1]) {
+            continue;
+        }
+        
+        j = i + 1;
+        k = numsSize - 1;
+        
         while (j < k) {
-            if (nums[i] + nums[j] + nums[k] == 0) {
-                //printf("%d, %d, %d\n",nums[i],nums[j],nums[k]);
-                int duplicate = 0;
-                for (int s=0;s<*returnSize;s++) {
-                    if ((array2[s][0] == nums[i] && array2[s][1] == nums[j])){
-                        duplicate = 1;
-                        break;;
-                    }
-                }
-                if (duplicate == 1) {
-                    j = j+1;
-                    k = k-1;
-                    continue;
-                }
-                int *array1 = (int *)malloc(sizeof(int)*3);
-                //*returnColumnSizes  = malloc(sizeof(int)*1);
-                array1[0] = nums[i];
-                array1[1] = nums[j];
-                array1[2] = nums[k];
-                array2 = (int **)realloc(array2, sizeof(int *)*(*returnSize + 1));
-                array2[*returnSize] = array1;
-                *returnColumnSizes = (int *)realloc(*returnColumnSizes, sizeof(int)*(*returnSize + 1));
-                (*returnColumnSizes)[*returnSize] = 3;
+            if (nums[i] + nums[j] + nums[k] == 0) {            
+                
+                array2[*returnSize] = (int *)malloc(sizeof(int)*3);
+                 array2[*returnSize][0] = nums[i];
+                 array2[*returnSize][1] = nums[j];
+                 array2[*returnSize][2] = nums[k];
                 *returnSize = *returnSize + 1;
-                //printf("i=%d,j=%d,k=%d\n",i,j,k);
+                while (j + 1 < k && nums[j+1] == nums[j] ) {
+                    j = j+1;
+                }
+                while ( k - 1  > j && nums[k-1] == nums[k]  ) {
+                    k = k-1;
+                }
                 j = j+1;
                 k = k-1;
-
+                if (*returnSize >= preSize) {
+                    preSize = preSize + *returnSize;
+                    array2 = (int **)realloc(array2, sizeof(int *)*preSize);
+                }
             } else if(nums[i] + nums[j] + nums[k] <0) {
                 j = j+1;
             } else if(nums[i] + nums[j] + nums[k] >0) {
@@ -52,6 +59,11 @@ int** threeSum(int* nums, int numsSize, int* returnSize, int** returnColumnSizes
             }
         }
     }
+    *returnColumnSizes = (int *)malloc(sizeof(int )*(*returnSize));
+    for (i=0;i<*returnSize;i++) {
+         (*returnColumnSizes)[i] = 3;
+    }
+   
     return array2;
 }
 
@@ -66,12 +78,6 @@ int main(int argc, char *argv[]){
     int inputArray[lenOfInputArray];
     for (;i<argc;i++) {
         inputArray[i-1] = atoi(argv[i]);
-    }
-
-    printf("%d\n",lenOfInputArray);
-    qsort(inputArray, lenOfInputArray, sizeof(int), cmp);
-    for(i=0;i<lenOfInputArray;i++) {
-        printf("%d\n",inputArray[i]);
     }
 
     int returnSize = 0;
