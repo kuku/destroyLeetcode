@@ -45,35 +45,61 @@ char getMapLetter(char digit, int mapIndex) {
     }
 }
 
+int getMapLetterStringLen(char digit) {
+    return strlen(phone[digit-'0'-2].letters);
+}
+int total = 0;
+int preAllocLen = 32;
+char **returnString;
+int backtrack (char *digit, char *combination, int index) {
+    if (*digit == '\0') {
+        combination[index] = '\0';
+        int lenOfCombination = strlen(combination) + 1;
+        char *finalStr = (char *) malloc(sizeof(char) * lenOfCombination);
+        strcpy(finalStr, combination);
+
+        if (total >= preAllocLen) {
+            preAllocLen = preAllocLen + total;
+            printf("preallocLen=%d\n",preAllocLen);
+            
+            //char **NewReturnString = (char **)malloc(sizeof(char *) * preAllocLen);
+            //memcpy(NewReturnString,returnString,total);
+            //free(returnString);
+            returnString =  realloc(returnString, sizeof(char *) * preAllocLen);
+            printf("After realloc the first p is %p\n",returnString[0]);
+        }
+        returnString[total] = finalStr;
+        if (total == 0) {
+            printf("the first p is %p\n",returnString[total]);
+        }
+        printf("the first p is %p\n",returnString[0]);
+        total = total + 1;
+        //printf("finalStr is %s\n",finalStr);
+        printf("total=%d\n",total);
+    } else {
+        int len = 0;
+        len = getMapLetterStringLen(*digit);
+        for (int i=0;i < len;i++) {
+            combination[index] = getMapLetter(*digit, i);
+            backtrack(digit+1, combination, index+1);
+        } 
+    }
+    return 0;
+}
+
 
 char ** letterCombinations(char * digits, int* returnSize){
     initPhoneHash();
-    
-    
-
     int digitsLen = strlen(digits) + 1;
+    
 
     printf("digits len is %d\n",digitsLen);
 
     char combination[digitsLen];    
     memset(combination, 0x00, digitsLen);
-    for(int i=0;i < digitsLen - 1;i++) {
-        int number = digits[i] - '0';
-        //printf("number = %d\n", number);
-        int mapIndex = 0;
-        char mapLetter;
-        
-        mapLetter = getMapLetter(digits[i], mapIndex);
-        if(mapLetter != '\0') {
-            combination[i] = mapLetter;
-        }
-    }
-    printf("stringis %s\n",combination);
-
-
-    
-
-    char **returnString = (char **)malloc(sizeof(char *)*1);
+    returnString = (char **)malloc(sizeof(char *) * preAllocLen);
+    backtrack(digits, combination,0);
+    *returnSize = total;
     return returnString;
 }
 
@@ -90,6 +116,18 @@ int main(int argc, char *argv[]) {
     }
     digits[len] = '\0';
     int returnSize = 0;
-    letterCombinations(digits, &returnSize);
+    char ** returnString;
+    returnString = letterCombinations(digits, &returnSize);
+
+    if (returnString[0] == NULL) {
+        printf("I am Null");
+    } else {
+        printf("the first string is %p\n",returnString[0] );
+    }
+    //printf("returnSize = %d\n", returnSize);
+    /*
+    for (int l=0;l<returnSize;l++) {
+        printf("the[%d] string is %s\n", l, returnString[l]);
+    }*/
     return 0;
 }
